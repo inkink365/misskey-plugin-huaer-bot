@@ -1,8 +1,10 @@
+import time
 import json
 import logging
-from websockets.sync.client import connect
-from .poster import MisskeyPoster
 from .chat import ChatHandler
+from .poster import MisskeyPoster
+from websockets.sync.client import connect
+from websocket import create_connection as connect
 from .config import INSTANCE_URL, API_TOKEN, USER_ID, CHANNEL_ID
 
 # 配置日志
@@ -12,6 +14,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger('MisskeyChannelIDFinder')
+
 
 class MisskeyNotificationListener:
     '''服务器监听类'''
@@ -24,9 +27,9 @@ class MisskeyNotificationListener:
         self.running = False
         self.chat = chat
         self.poster = poster
-        self.max_reconnect_attempts = 5 # 最大重连次数
-        self.reconnect_delay = 5  # 初始重连延迟
-        self.websocket = None 
+        self.max_reconnect_attempts = 5  # 最大重连次数
+        self.reconnect_delay = 5         # 初始重连延迟
+        self.websocket = None            # 添加websocket引用
 
     def stop(self):
         """停止监听"""
@@ -39,7 +42,7 @@ class MisskeyNotificationListener:
             finally:
                 self.websocket = None
         logger.info("监听已停止")
-        
+
     def _handle_message(self, message):
         """处理接收到的消息"""
         try:
@@ -87,7 +90,6 @@ class MisskeyNotificationListener:
             logger.info(f"查看链接: {INSTANCE_URL}/notes/{note_id}")
         else:
             logger.error("回复失败，请检查错误信息")
-
 
     def start_listening(self):
         """开始监听消息，支持指定频道"""

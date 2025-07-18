@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "misskey-plugin-huaer-bot"
-version = "1.0.2"
+version = "1.0.3"
 description = "基于Misskey智能对话插件，支持多频道管理和回复链记忆"
 authors = ["HuaEr DevGroup <HuaEr_DevGroup@outlook.com>"]
 readme = "README.md"
