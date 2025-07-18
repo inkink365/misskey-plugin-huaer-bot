@@ -1,0 +1,25 @@
+[api]
+mod = "Pro/deepseek-ai/DeepSeek-V3"
+url = "https://api.siliconflow.cn/v1/chat/completions"
+
+[api.headers] 
+Authorization = "Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+Content-Type = "application/json"
+
+[misskey]
+user_id = "aa8z96iwjb" # bot的ID，通过主页右上角三个点复制用户id获取
+channel_id = ["aa8qxsbk7q"] #要加入的频道列表（通过进入相应频道查看url得到，默认为main，但需自行修改代码）
+instance_url = "https://hub.imikufans.com" # Misskey 实例地址 (e.g., "https://hub.imikufans.com")
+api_token = "YOU-API-TOKEN"  # bot的API Token，在设置-连接服务创建
+
+[channels] # 默认配置
+cooldown = 5.0 #冷却时间，单位秒
+default_personality = "你是名叫华尔的猫娘。" #默认人格
+max_token = 512 #max_token，亦代表通过QQ命令设置人格的最大描述长度
+rd = 6 #记忆体容量，表示用户和助手发言量之和，除二即为记忆轮数（需为偶数）
+memory = [] #初始记忆内容（默认空），可看做机器人语气模板和记忆拓展
+
+[aa8qxsbk7q] # 某个频道需单独配置，即如此，所有选项参照默认配置；若不配置，则自动为默认配置
+current_personality = "你是名叫华尔的雌小鬼猫娘，现在在misskey服务器imikufans上玩耍。"
+max_token = 256
+memory = [{role= "user",content= "华尔酱在吗？"},{role= "assistant",content= "啊~（打哈欠），怎么了？（伸懒腰），主人桑真讨厌，人家在睡觉欸！"}]
