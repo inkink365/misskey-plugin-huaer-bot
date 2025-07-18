@@ -26,6 +26,19 @@ class MisskeyNotificationListener:
         self.poster = poster
         self.max_reconnect_attempts = 5 # 最大重连次数
         self.reconnect_delay = 5  # 初始重连延迟
+        self.websocket = None 
+
+    def stop(self):
+        """停止监听"""
+        self.running = False
+        if self.websocket:
+            try:
+                self.websocket.close()
+            except Exception as e:
+                logger.error(f"关闭连接时出错: {e}")
+            finally:
+                self.websocket = None
+        logger.info("监听已停止")
         
     def _handle_message(self, message):
         """处理接收到的消息"""
@@ -79,57 +92,80 @@ class MisskeyNotificationListener:
     def start_listening(self):
         """开始监听消息，支持指定频道"""
         self.running = True
-        logger.info(f"开始监听通知 (用户ID: {self.user_id})")
+        reconnect_attempts = 0
         
-        with connect(self.ws_url) as websocket:
-            # 必须首先订阅主频道才能接收通知
-            main_connect_msg = {
-                "type": "connect",
-                "body": {
-                    "channel": "main",
-                    "id": "main"
-                }
-            }
-            websocket.send(json.dumps(main_connect_msg))
-            
-            # 如果提供了频道ID，则额外订阅该频道
-            if self.channel_id:
-                channel_connect_msg = {
+        while self.running and reconnect_attempts < self.max_reconnect_attempts:
+            try:
+                logger.info(f"开始监听通知 (用户ID: {self.user_id})")
+                self.websocket = connect(self.ws_url)
+                
+                # 必须首先订阅主频道才能接收通知
+                main_connect_msg = {
                     "type": "connect",
                     "body": {
-                        "channel": "channel",
-                        "id": f"channel_{self.channel_id}",
-                        "params": {
-                            "channelId": self.channel_id
-                        }
+                        "channel": "main",
+                        "id": "main"
                     }
                 }
-                websocket.send(json.dumps(channel_connect_msg))
-                logger.info(f"已订阅频道: {self.channel_id}")
-            
-            # 持续接收消息
-            while self.running:
-                try:
-                    message = websocket.recv(timeout=10)
-                    self._handle_message(message)
-                except TimeoutError:
-                    # 定期发送心跳包
-                    ping_msg = {
-                        "type": "ping",
-                        "body": {"id": "heartbeat"}
+                self.websocket.send(json.dumps(main_connect_msg))
+                
+                # 如果提供了频道ID，则额外订阅该频道
+                if self.channel_id:
+                    channel_connect_msg = {
+                        "type": "connect",
+                        "body": {
+                            "channel": "channel",
+                            "id": f"channel_{self.channel_id}",
+                            "params": {
+                                "channelId": self.channel_id
+                            }
+                        }
                     }
-                    websocket.send(json.dumps(ping_msg))
-                except Exception as e:
-                    logger.exception(f"连接错误: {e}")
-                    if self.max_reconnect_attempts :
-                        logger.info(f"将在{self.reconnect_delay}秒后尝试重连....")
-                        time.sleep(self.reconnect_delay)
-                        self.reconnect_dela += 2
-                        self.max_reconnect_attempts -= 1
-                        self.start_listening()
-                    else :
-                        logger.info(f"重连次数达到上限")
+                    self.websocket.send(json.dumps(channel_connect_msg))
+                    logger.info(f"已订阅频道: {self.channel_id}")
+                
+                # 持续接收消息
+                while self.running:
+                    try:
+                        message = self.websocket.recv(timeout=10)
+                        self._handle_message(message)
+                    except TimeoutError:
+                        # 定期发送心跳包
+                        ping_msg = {
+                            "type": "ping",
+                            "body": {"id": "heartbeat"}
+                        }
+                        self.websocket.send(json.dumps(ping_msg))
+                    except Exception as e:
+                        logger.exception(f"接收消息时出错: {e}")
                         break
+                        
+            except Exception as e:
+                logger.exception(f"连接错误: {e}")
+                if not self.running:
+                    break
+                    
+                reconnect_attempts += 1
+                delay = self.reconnect_delay + 2 * (reconnect_attempts - 1)
+                logger.info(f"将在{delay}秒后尝试重连 ({reconnect_attempts}/{self.max_reconnect_attempts})...")
+                
+                # 带中断检查的等待
+                for _ in range(int(delay * 10)):
+                    if not self.running:
+                        break
+                    time.sleep(0.1)
+                    
+            finally:
+                if self.websocket:
+                    try:
+                        self.websocket.close()
+                    except:
+                        pass
+                    self.websocket = None
+
+        if reconnect_attempts >= self.max_reconnect_attempts:
+            logger.error("重连次数达到上限，停止监听")
+        self.running = False
 
 if __name__ == "__main__":
     
