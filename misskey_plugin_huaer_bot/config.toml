@@ -3,7 +3,7 @@ mod = "Pro/deepseek-ai/DeepSeek-V3"
 url = "https://api.siliconflow.cn/v1/chat/completions"
 
 [api.headers] 
-Authorization = "Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+Authorization = "Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" # siliconflow API key
 Content-Type = "application/json"
 
 [misskey]
