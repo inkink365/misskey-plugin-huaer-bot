@@ -1,7 +1,7 @@
 from .config import ChatConfig, ConfigManager, CHANNEL_ID, BASE_DIR
-from .chat import ChatHandler
-from .poster import MisskeyPoster
 from .connector import MisskeyNotificationListener
+from .poster import MisskeyPoster
+from .chat import ChatHandler
 from typing import Dict, List
 import threading
 import logging

@@ -1,7 +1,7 @@
 import time
-import requests
 import json
 import logging
+import requests
 from .config import INSTANCE_URL, API_TOKEN, CHANNEL_ID
 
 # 配置日志
@@ -58,13 +58,13 @@ class MisskeyPoster:
                 
             except requests.exceptions.ConnectionError as e:
                 # 连接错误（10054等）
-                logger.warning(f"连接错误 (尝试 {attempt+1}): {e}")
+                logger.error(f"连接错误 : {e} 将在{retry_delay}秒后尝试重连... (尝试 {attempt+1})")
                 time.sleep(retry_delay)
                 attempt += 1
                 retry_delay += 2
                 
             except requests.exceptions.Timeout:
-                logger.warning(f"请求超时 (尝试 {attempt+1})")
+                logger.error(f"请求超时 : {e} 将在{retry_delay}秒后尝试重连... (尝试 {attempt+1})")
                 time.sleep(retry_delay)
                 attempt += 1
                 retry_delay += 2

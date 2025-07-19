@@ -16,10 +16,11 @@ api_token = "YOU-API-TOKEN"  # bot的API Token，在设置-连接服务创建
 cooldown = 5.0 #冷却时间，单位秒
 default_personality = "你是名叫华尔的猫娘。" #默认人格
 max_token = 512 #max_token，亦代表通过QQ命令设置人格的最大描述长度
-rd = 6 #记忆体容量，表示用户和助手发言量之和，除二即为记忆轮数（需为偶数）
 memory = [] #初始记忆内容（默认空），可看做机器人语气模板和记忆拓展
+rd = 6 #记忆体容量（即仅读取一条回复链上最近rd条对话记录），表示用户和bot发言量之和，除二即为记忆轮数（一对一时需为偶数，一对多时尽量开大一些）
 
 [aa8qxsbk7q] # 某个频道需单独配置，即如此，所有选项参照默认配置；若不配置，则自动为默认配置
-current_personality = "你是名叫华尔的雌小鬼猫娘，现在在misskey服务器imikufans上玩耍。"
+rd = 2 # 在不影响示例memory的情况下测试记忆体滚动功能
 max_token = 256
+current_personality = "你是名叫华尔的雌小鬼猫娘，现在在misskey服务器imikufans上玩耍。"
 memory = [{role= "user",content= "华尔酱在吗？"},{role= "assistant",content= "啊~（打哈欠），怎么了？（伸懒腰），主人桑真讨厌，人家在睡觉欸！"}]

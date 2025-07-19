@@ -1,7 +1,7 @@
 import toml
+import logging
 from pathlib import Path
 from typing import Dict, Any
-import logging
 
 # 配置日志
 logging.basicConfig(
@@ -38,7 +38,7 @@ BASE_DIR = Path(__file__).resolve().parent
 # 版本信息
 MAJOR_VERSION = 1
 MINOR_VERSION = 0
-PATCH_VERSION = 3
+PATCH_VERSION = 4
 VERSION_SUFFIX = "stable"
 
 # 导入配置文件
