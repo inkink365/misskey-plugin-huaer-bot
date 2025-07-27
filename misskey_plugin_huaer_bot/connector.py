@@ -1,6 +1,7 @@
 import time
 import json
 import logging
+from typing import Optional
 from .chat import ChatHandler
 from .poster import MisskeyPoster
 from websockets.sync.client import connect
@@ -17,7 +18,7 @@ logger = logging.getLogger('MisskeyChannelIDFinder')
 
 class MisskeyNotificationListener:
     '''服务器监听类'''
-    def __init__(self, channel_id: None|str, chat: ChatHandler, poster: MisskeyPoster):
+    def __init__(self, channel_id: Optional[str], chat: ChatHandler, poster: MisskeyPoster):
         self.instance_url = INSTANCE_URL.rstrip('/')
         self.api_token = API_TOKEN
         self.user_id = USER_ID
